@@ -1,10 +1,13 @@
 import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { HttpServiceUser } from '../services/http'
 import { useDispatch } from 'react-redux'
 import { setEmail, setToken, setName } from '../store/reducers/user-reducer'
 
 const Signup = () => {
+  const navigate = useNavigate()
   const dispatch = useDispatch()
+
   const [dataSignup, setDataSignup] = useState({
     name: '',
     email: '',
@@ -128,6 +131,7 @@ const Signup = () => {
             <button
               className="inline-block align-baseline font-bold text-sm text-blue-200 hover:text-blue-500"
               type="button"
+              onClick={() => navigate('/')}
             >
               Voltar
             </button>

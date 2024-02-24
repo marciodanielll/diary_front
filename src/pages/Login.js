@@ -1,6 +1,9 @@
 import React from 'react'
+import { useNavigate } from 'react-router-dom'
 
 const Login = () => {
+  const navigate = useNavigate()
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-800">
       <div className="max-w-md w-full space-y-8 bg-gray-700 p-6 rounded-lg">
@@ -55,6 +58,7 @@ const Login = () => {
               <a
                 href="#"
                 className="font-medium text-indigo-600 hover:text-indigo-500"
+                onClick={() => navigate('/signup')}
               >
                 Cadastrar
               </a>
