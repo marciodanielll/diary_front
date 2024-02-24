@@ -21,5 +21,6 @@
     "react-hooks"
   ],
   "rules": {
+    "import/export": "off"
   }
 }
