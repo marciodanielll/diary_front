@@ -11,15 +11,15 @@ import { BrowserRouter } from 'react-router-dom'
 
 const root = ReactDOM.createRoot(document.getElementById('root'))
 root.render(
-  <Provider store={store}>
-    <PersistGate loading={<div>Loading...</div>} persistor={persistor}>
+  <PersistGate loading={null} persistor={persistor}>
+    <Provider store={store}>
       <React.StrictMode>
         <BrowserRouter>
           <App />
         </BrowserRouter>
       </React.StrictMode>
-    </PersistGate>
-  </Provider>
+    </Provider>
+  </PersistGate>
 )
 
 reportWebVitals()
