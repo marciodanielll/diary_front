@@ -1,18 +1,18 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { toast } from 'react-toastify'
+import { HttpServiceLogin } from '../services/http'
 import emailValidator from '../utils/emailValidator'
 import passwordValidator from '../utils/passwordValidator'
 
 const Login = () => {
   const navigate = useNavigate()
-  const [idLoginValid, setIsLoginValid] = useState(true)
   const [dataLogin, setDataLogin] = useState({
     email: '',
     password: ''
   })
 
   const handleChange = (data) => {
-    setIsLoginValid(true)
     setDataLogin({
       ...dataLogin,
       [data.name]: data.value
@@ -20,15 +20,23 @@ const Login = () => {
   }
   const { email, password } = dataLogin
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     const emailIsValid = emailValidator(email)
     const passwordIsValid = passwordValidator(password)
 
     if (!emailIsValid || !passwordIsValid) {
-      setIsLoginValid(false)
+      toast.error('Credenciais inválidas')
+    }
+
+    try {
+      const result = await HttpServiceLogin().login(dataLogin)
+      console.log(result)
+      toast.success('Login com Sucesso!')
+    } catch (e) {
+      console.log(e)
+      toast.error('Desculpe tente mais tarde')
     }
   }
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-gray-800 to-gray-900">
       <div className="max-w-md w-full space-y-8 bg-gray-700 p-6 rounded-lg">
