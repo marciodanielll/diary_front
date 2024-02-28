@@ -1,9 +1,7 @@
 const emailValidator = (email) => {
-  const emailValidator = /\S+@\S+\.\S+/
-  const isValid = emailValidator.test(email)
+  const REGEX_EMAIL = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}(?:\.[a-zA-Z]{2,})?$/g
 
-  // if (!isValid) return 'email inválido'
-  // if (email !== confirmEmail) return 'email e confirmação não conferem'
+  const isValid = REGEX_EMAIL.test(email)
 
   return isValid
 }

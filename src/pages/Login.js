@@ -2,10 +2,13 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { HttpServiceUser } from '../services/http'
-// import emailValidator from '../utils/emailValidator'
+import emailValidator from '../utils/emailValidator'
 import passwordValidator from '../utils/passwordValidator'
 import { useDispatch } from 'react-redux'
 import { setEmail, setToken, setName } from '../store/reducers/user-reducer'
+
+const ONE_SECOND = 1000
+const TWO_SECONDS = 2000
 
 const Login = () => {
   const navigate = useNavigate()
@@ -25,35 +28,71 @@ const Login = () => {
   const { email, password } = dataLogin
 
   const handleLogin = async () => {
-    // const emailIsValid = emailValidator(email)
+    const emailIsValid = emailValidator(email)
     const passwordIsValid = passwordValidator(password)
 
-    if (!passwordIsValid) {
-      toast.error('Credenciais inválidas')
-    } else {
-      try {
-        const response = await HttpServiceUser().login(dataLogin)
-        const { data: { token, name } } = response
-        console.log(response)
-        dispatch(setName(name))
-        dispatch(setEmail(email))
-        dispatch(setToken(token))
-        console.log(name, token)
-        toast.success('Login com Sucesso!')
+    switch (true) {
+      case !emailIsValid && !passwordIsValid:
+        toast.error('E-mail com formato inválido', {
+          position: 'top-center'
+        })
+        toast.error('A senha deve conter no mínimo 8 caracteres', {
+          position: 'top-center'
+        })
+        break
+      case !emailIsValid:
+        toast.error('E-mail com formato inválido', {
+          position: 'top-center'
+        })
+        break
+      case !passwordIsValid:
+        toast.error('A senha deve conter no mínimo 8 caracteres', {
+          position: 'top-center'
+        })
+        break
+      default:
+        try {
+          const response = await HttpServiceUser().login(dataLogin)
+          const {
+            data: { token, name }
+          } = response
 
-        setTimeout(() => {
-          navigate('/diary')
-        }, 1000)
-      } catch (error) {
-        console.log(error)
-        const { response: { data: { statusCode, message } } } = error
+          dispatch(setName(name))
+          dispatch(setEmail(email))
+          dispatch(setToken(token))
 
-        if (statusCode === 400) {
-          toast.error(message)
-        } else {
-          toast.error('Desculpe tente mais tarde')
+          toast.success('Login com Sucesso!', {
+            autoClose: ONE_SECOND,
+            position: 'top-center'
+          })
+
+          setTimeout(() => {
+            navigate('/diary')
+          }, TWO_SECONDS)
+        } catch (error) {
+          const {
+            response: {
+              data: { statusCode, message }
+            }
+          } = error
+
+          console.log({
+            statusCode,
+            message
+          })
+
+          if (statusCode === 400) {
+            toast.error(message,
+              {
+                position: 'top-center'
+              })
+          } else {
+            toast.error('Desculpe tente mais tarde',
+              {
+                position: 'top-center'
+              })
+          }
         }
-      }
     }
   }
   return (
@@ -79,8 +118,8 @@ const Login = () => {
                 required
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                 placeholder="E-mail"
-                onChange={ (e) => handleChange(e.target) }
-                value={ email }
+                onChange={(e) => handleChange(e.target)}
+                value={email}
               />
             </div>
             <div>
@@ -95,8 +134,8 @@ const Login = () => {
                 required
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                 placeholder="Senha"
-                onChange={ (e) => handleChange(e.target) }
-                value={ password }
+                onChange={(e) => handleChange(e.target)}
+                value={password}
               />
             </div>
           </div>
