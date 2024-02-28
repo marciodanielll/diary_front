@@ -9,7 +9,12 @@ export const HttpServiceUser = () => {
     return api.post('/user', user)
   }
 
+  const login = (login) => {
+    return api.post('/user/login', login)
+  }
+
   return {
-    create
+    create,
+    login
   }
 }

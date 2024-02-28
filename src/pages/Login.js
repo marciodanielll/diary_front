@@ -1,9 +1,61 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { toast } from 'react-toastify'
+import { HttpServiceUser } from '../services/http'
+// import emailValidator from '../utils/emailValidator'
+import passwordValidator from '../utils/passwordValidator'
+import { useDispatch } from 'react-redux'
+import { setEmail, setToken, setName } from '../store/reducers/user-reducer'
 
 const Login = () => {
   const navigate = useNavigate()
+  const dispatch = useDispatch()
 
+  const [dataLogin, setDataLogin] = useState({
+    email: '',
+    password: ''
+  })
+
+  const handleChange = (data) => {
+    setDataLogin({
+      ...dataLogin,
+      [data.name]: data.value
+    })
+  }
+  const { email, password } = dataLogin
+
+  const handleLogin = async () => {
+    // const emailIsValid = emailValidator(email)
+    const passwordIsValid = passwordValidator(password)
+
+    if (!passwordIsValid) {
+      toast.error('Credenciais inválidas')
+    } else {
+      try {
+        const response = await HttpServiceUser().login(dataLogin)
+        const { data: { token, name } } = response
+        console.log(response)
+        dispatch(setName(name))
+        dispatch(setEmail(email))
+        dispatch(setToken(token))
+        console.log(name, token)
+        toast.success('Login com Sucesso!')
+
+        setTimeout(() => {
+          navigate('/diary')
+        }, 1000)
+      } catch (error) {
+        console.log(error)
+        const { response: { data: { statusCode, message } } } = error
+
+        if (statusCode === 400) {
+          toast.error(message)
+        } else {
+          toast.error('Desculpe tente mais tarde')
+        }
+      }
+    }
+  }
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-gray-800 to-gray-900">
       <div className="max-w-md w-full space-y-8 bg-gray-700 p-6 rounded-lg">
@@ -27,6 +79,8 @@ const Login = () => {
                 required
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                 placeholder="E-mail"
+                onChange={ (e) => handleChange(e.target) }
+                value={ email }
               />
             </div>
             <div>
@@ -41,6 +95,8 @@ const Login = () => {
                 required
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                 placeholder="Senha"
+                onChange={ (e) => handleChange(e.target) }
+                value={ password }
               />
             </div>
           </div>
@@ -67,7 +123,8 @@ const Login = () => {
 
           <div>
             <button
-              type="submit"
+              type="button"
+              onClick={() => handleLogin()}
               className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
             >
               Logar
