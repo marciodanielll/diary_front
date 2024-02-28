@@ -1,12 +1,16 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
-import { HttpServiceLogin } from '../services/http'
-import emailValidator from '../utils/emailValidator'
+import { HttpServiceUser } from '../services/http'
+// import emailValidator from '../utils/emailValidator'
 import passwordValidator from '../utils/passwordValidator'
+import { useDispatch } from 'react-redux'
+import { setEmail, setToken, setName } from '../store/reducers/user-reducer'
 
 const Login = () => {
   const navigate = useNavigate()
+  const dispatch = useDispatch()
+
   const [dataLogin, setDataLogin] = useState({
     email: '',
     password: ''
@@ -21,20 +25,35 @@ const Login = () => {
   const { email, password } = dataLogin
 
   const handleLogin = async () => {
-    const emailIsValid = emailValidator(email)
+    // const emailIsValid = emailValidator(email)
     const passwordIsValid = passwordValidator(password)
 
-    if (!emailIsValid || !passwordIsValid) {
+    if (!passwordIsValid) {
       toast.error('Credenciais inválidas')
-    }
+    } else {
+      try {
+        const response = await HttpServiceUser().login(dataLogin)
+        const { data: { token, name } } = response
+        console.log(response)
+        dispatch(setName(name))
+        dispatch(setEmail(email))
+        dispatch(setToken(token))
+        console.log(name, token)
+        toast.success('Login com Sucesso!')
 
-    try {
-      const result = await HttpServiceLogin().login(dataLogin)
-      console.log(result)
-      toast.success('Login com Sucesso!')
-    } catch (e) {
-      console.log(e)
-      toast.error('Desculpe tente mais tarde')
+        setTimeout(() => {
+          navigate('/diary')
+        }, 1000)
+      } catch (error) {
+        console.log(error)
+        const { response: { data: { statusCode, message } } } = error
+
+        if (statusCode === 400) {
+          toast.error(message)
+        } else {
+          toast.error('Desculpe tente mais tarde')
+        }
+      }
     }
   }
   return (

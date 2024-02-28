@@ -9,20 +9,12 @@ export const HttpServiceUser = () => {
     return api.post('/user', user)
   }
 
-  return {
-    create
-  }
-}
-export const HttpServiceLogin = () => {
-  const api = axios.create({
-    baseURL: process.env.REACT_APP_API_URL
-  })
-
   const login = (login) => {
-    return api.post('/', login)
+    return api.post('/user/login', login)
   }
 
   return {
+    create,
     login
   }
 }
