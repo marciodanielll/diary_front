@@ -1,10 +1,10 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { HttpServiceUser } from '../services/http'
 import emailValidator from '../utils/emailValidator'
 import passwordValidator from '../utils/passwordValidator'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { setEmail, setToken, setName } from '../store/reducers/user-reducer'
 
 const ONE_SECOND = 1000
@@ -13,6 +13,14 @@ const TWO_SECONDS = 2000
 const Login = () => {
   const navigate = useNavigate()
   const dispatch = useDispatch()
+
+  const user = useSelector((state) => state.user)
+
+  useEffect(() => {
+    if (user.token) {
+      navigate('/diary')
+    }
+  })
 
   const [dataLogin, setDataLogin] = useState({
     email: '',
