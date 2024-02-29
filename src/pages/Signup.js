@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { HttpServiceUser } from '../services/http'
 import { useDispatch } from 'react-redux'
 import { setEmail, setToken, setName } from '../store/reducers/user-reducer'
+import { toast } from 'react-toastify'
 
 const Signup = () => {
   const navigate = useNavigate()
@@ -29,8 +30,31 @@ const Signup = () => {
       dispatch(setName(name))
       dispatch(setEmail(email))
       dispatch(setToken(token))
+
+      navigate('/diary')
     } catch (error) {
-      console.error('Error:', error)
+      const {
+        response: {
+          data: { statusCode, message }
+        }
+      } = error
+
+      console.log({
+        statusCode,
+        message
+      })
+
+      if (statusCode === 400) {
+        toast.error(message,
+          {
+            position: 'top-center'
+          })
+      } else {
+        toast.error('Desculpe tente mais tarde',
+          {
+            position: 'top-center'
+          })
+      }
     }
   }
 

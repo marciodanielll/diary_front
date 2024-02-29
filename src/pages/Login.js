@@ -104,10 +104,10 @@ const Login = () => {
     }
   }
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-gray-800 to-gray-900">
-      <div className="max-w-md w-full space-y-8 bg-gray-700 p-6 rounded-lg">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-gray-800 to-gray-900 p-4">
+      <div className="max-w-md w-full space-y-8 bg-gray-700 p-6 rounded-lg shadow-md">
         <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-white">
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-white sm:text-4xl">
             LOGIN
           </h2>
         </div>
