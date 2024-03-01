@@ -44,8 +44,9 @@ const Diary = () => {
 
   const saveDiaryEntry = () => {
     console.log('Saving diary entry:', formData)
-    // Implemente a lógica de salvamento aqui
   }
+
+  const API_KEY = process.env.NODE_ENV === 'production' ? process.env.REACT_APP_API_KEY_PROD : process.env.REACT_APP_AP_API_KEY_DEV
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-800 p-4">
@@ -95,7 +96,7 @@ const Diary = () => {
           </div>
           <div className="flex flex-col items-center mb-4">
             <Editor
-              apiKey="ejc332i53z6d0t7hck21xkb15rqyje8frtp2u16mp5beq4xo"
+              apiKey={API_KEY}
               init={{
                 height: 600,
                 menubar: true,
