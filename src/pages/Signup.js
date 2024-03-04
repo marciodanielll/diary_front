@@ -16,22 +16,85 @@ const Signup = () => {
     password: '',
     confirmPassword: ''
   })
+  const [validationErrors, setValidationErrors] = useState({
+    emailMismatch: false,
+    passwordMismatch: false,
+    incompleteName: false
+  })
 
   const handlerChange = (event) => {
     const { name, value } = event.target
     setDataSignup({ ...dataSignup, [name]: value })
+
+    if (name === 'email' || name === 'confirmEmail') {
+      setValidationErrors({ ...validationErrors, emailMismatch: false })
+    }
+    if (name === 'password' || name === 'confirmPassword') {
+      setValidationErrors({ ...validationErrors, passwordMismatch: false })
+    }
+    if (name === 'name') {
+      setValidationErrors({
+        ...validationErrors,
+        incompleteName: false
+      })
+    }
+  }
+
+  const validateForm = () => {
+    const { name, email, confirmEmail, password, confirmPassword } = dataSignup
+    let isValid = true
+    switch (true) {
+      case !name || !email || !confirmEmail || !password || !confirmPassword:
+        toast.error('Todos os campos precisam estar preenchidos',
+          {
+            position: 'top-center'
+          })
+        isValid = false
+        break
+      case email !== confirmEmail:
+        setValidationErrors({
+          ...validationErrors,
+          emailMismatch: true
+        })
+        isValid = false
+        break
+      case password !== confirmPassword:
+        setValidationErrors({
+          ...validationErrors,
+          passwordMismatch: true
+        })
+        isValid = false
+        break
+      case name.split(' ').length < 2:
+        setValidationErrors({
+          ...validationErrors,
+          incompleteName: true
+        })
+        isValid = false
+        break
+
+      default:
+        return true
+    }
+
+    return isValid
   }
 
   const handleClick = async () => {
+    const { name, email, password } = dataSignup
+
+    if (!validateForm()) {
+      return
+    }
+
     try {
-      const { name, email, password } = dataSignup
       const { data: { token } } = await HttpServiceUser().create({ name, email, password })
 
       dispatch(setName(name))
       dispatch(setEmail(email))
       dispatch(setToken(token))
 
-      navigate('/diary')
+      // navigate('/diary')
     } catch (error) {
       const {
         response: {
@@ -78,6 +141,9 @@ const Signup = () => {
               name='name'
               onChange={handlerChange}
             />
+            {validationErrors.incompleteName && (
+              <span className="text-red-500 text-sm">favor inserir nome completo.</span>
+            )}
           </div>
           <div className="mb-4">
             <label
@@ -110,6 +176,9 @@ const Signup = () => {
               name='confirmEmail'
               onChange={handlerChange}
             />
+            {validationErrors.emailMismatch && (
+              <span className="text-red-500 text-sm">O e-mail não confere.</span>
+            )}
           </div>
           <div className="mb-6">
             <label
@@ -136,13 +205,17 @@ const Signup = () => {
               Confirmação da Senha
             </label>
             <input
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              className='shadow appearance-none border rounded w-full
+               py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
               id="confirmar-senha"
               type="password"
               name='confirmPassword'
               placeholder="Confirme sua senha"
               onChange={handlerChange}
             />
+            {validationErrors.passwordMismatch && (
+              <span className="text-red-500 text-sm">As senhas não conferem.</span>
+            )}
           </div>
           <div className="flex items-center justify-between">
             <button
