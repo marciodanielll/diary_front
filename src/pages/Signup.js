@@ -94,7 +94,7 @@ const Signup = () => {
       dispatch(setEmail(email))
       dispatch(setToken(token))
 
-      // navigate('/diary')
+      navigate('/diary')
     } catch (error) {
       const {
         response: {
